@@ -2,7 +2,7 @@
 
 1. Подготовлена схема базы данных в Draw.io
 
-![схема](image.png)
+![alt text](image-1.png)
 https://drive.google.com/file/d/15C70KAF0h7jtXzaa1V5edr2Ad6c45-44/view?usp=sharing
 
 2. Подготовлена структура проекта
