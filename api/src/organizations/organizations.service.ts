@@ -34,7 +34,7 @@ export class OrganizationsService {
     return organization;
   }
 
-  async update(id: string, updateOrganizationDto: UpdateOrganizationDto): Promise<Organization> {
+  async update(id:string, updateOrganizationDto:UpdateOrganizationDto): Promise<Organization> {
     const organization=await this.findOne(id);
     Object.assign(organization, updateOrganizationDto);
     organization.updatedAt=new Date();
