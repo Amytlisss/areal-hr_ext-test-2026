@@ -1,8 +1,8 @@
 import { IsString, IsOptional, MaxLength, IsUUID, IsBoolean} from "class-validator";
 
-export class CreateDepartamentDto{
+export class CreateDepartmentDto{
     @IsUUID()
-    organizationId:String;
+    organizationId:string;
 
     @IsOptional()
     @IsUUID()

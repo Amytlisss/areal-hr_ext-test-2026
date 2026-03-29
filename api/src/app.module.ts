@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import{OrganizationsModule} from "./organizations/organizations.module";
-
+import { DepartmentsModule } from './departments/departments.module';
 @Module({
   imports:[
     ConfigModule.forRoot({
@@ -25,6 +25,7 @@ import{OrganizationsModule} from "./organizations/organizations.module";
       inject:[ConfigService],
     }),
     OrganizationsModule,
+    DepartmentsModule,
   ],
 })
 export class AppModule {}
