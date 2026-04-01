@@ -29,7 +29,7 @@ export class OrganizationsService {
       where:{id, deletedAt:IsNull()},
     });
     if (!organization){
-      throw new NotFoundException("Organization with ID ${id} not found");
+      throw new NotFoundException(`Organization with ID ${id} not found`);
     }
     return organization;
   }

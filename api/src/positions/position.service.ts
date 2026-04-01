@@ -22,7 +22,7 @@ export class PositionsService{
           where:{id, deletedAt:IsNull()},
         });
         if (!position){
-          throw new NotFoundException("POsition with ID ${id} not found");
+          throw new NotFoundException(`Position with ID ${id} not found`);
         }
         return position;
       }
