@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import{OrganizationsModule} from "./organizations/organizations.module";
 import { DepartmentsModule } from './departments/departments.module';
 import { PositionModule } from './positions/position.module';
+import { EmployeesModule } from './employees/employees.module';
+import { FilesModule } from './files/files.module';
+import { HrOperationsModule } from './hr-operations/hr-operations.module';
+import { OperationHistoryModule } from './operation-history/operation-history.module';
 @Module({
   imports:[
     ConfigModule.forRoot({
@@ -28,6 +32,10 @@ import { PositionModule } from './positions/position.module';
     OrganizationsModule,
     DepartmentsModule,
     PositionModule,
+    EmployeesModule,
+    FilesModule,
+    HrOperationsModule,
+    OperationHistoryModule,
   ],
 })
 export class AppModule {}
