@@ -7,6 +7,8 @@ import { UpdateHrOperationDto } from './dto/update-hr-operation.dto';
 import { EmployeesService } from '../employees/employees.service';
 import { DepartmentsService } from '../departments/departments.service';
 import { PositionsService } from '../positions/position.service';
+import { OperationHistoryService } from '../operation-history/operation-history.service';
+import { ObjectType } from '../operation-history/entities/operation-history.entity'; 
 
 @Injectable()
 export class HrOperationsService {
@@ -16,10 +18,17 @@ export class HrOperationsService {
     private employeesService: EmployeesService,
     private departmentsService: DepartmentsService,
     private positionsService: PositionsService,
+    private operationHistoryService: OperationHistoryService,
   ) {}
 
-  async create(createHrOperationDto: CreateHrOperationDto): Promise<HrOperation> {
-    await this.employeesService.findOne(createHrOperationDto.employeeId);
+  async create(createHrOperationDto: CreateHrOperationDto, userId?: string): Promise<HrOperation> {
+    const employee = await this.employeesService.findOne(createHrOperationDto.employeeId);
+
+    const isDismissed = await this.employeesService.isDismissed(createHrOperationDto.employeeId);
+
+    if (isDismissed && createHrOperationDto.operationType !== OperationType.HIRE) {
+      throw new BadRequestException(`Cannot create operations for dismissed employee (except hiring back)`);
+    }
 
     if (createHrOperationDto.operationType === OperationType.HIRE) {
       if (!createHrOperationDto.departmentId || !createHrOperationDto.positionId) {
@@ -38,7 +47,20 @@ export class HrOperationsService {
     }
 
     const hrOperation = this.hrOperationRepository.create(createHrOperationDto);
-    return this.hrOperationRepository.save(hrOperation);
+    const savedOperation = await this.hrOperationRepository.save(hrOperation);
+
+     if (userId) {
+      await this.operationHistoryService.logChange(
+        userId,
+        ObjectType.HR_OPERATION,
+        savedOperation.id,
+        'operation_type',
+        null,
+        savedOperation.operationType,
+      );
+    }
+
+    return savedOperation;
   }
 
   async findAll(): Promise<HrOperation[]> {

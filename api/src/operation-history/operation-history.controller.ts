@@ -7,7 +7,10 @@ export class OperationHistoryController {
   constructor(private readonly historyService: OperationHistoryService) {}
 
   @Get()
-  findAll() {
+  findAll(@Query('employeeId') employeeId?: string) {
+    if (employeeId) {
+      return this.historyService.findByEmployee(employeeId);
+    }
     return this.historyService.findAll();
   }
 

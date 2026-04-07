@@ -46,6 +46,17 @@ export class OperationHistoryService {
     });
   }
 
+  async findByEmployee(employeeId: string): Promise<OperationHistory[]> {
+    return this.historyRepository.find({
+      where: [
+        { objectType: ObjectType.EMPLOYEE, objectId: employeeId, deletedAt: IsNull() },
+        { objectType: ObjectType.HR_OPERATION, objectId: employeeId, deletedAt: IsNull() },
+      ],
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async findByObject(objectType: ObjectType, objectId: string): Promise<OperationHistory[]> {
     return this.historyRepository.find({
       where: { objectType, objectId, deletedAt: IsNull() },
