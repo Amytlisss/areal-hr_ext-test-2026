@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { Repository, IsNull, Like } from 'typeorm';
 import { Employee } from './entities/employee.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
@@ -17,9 +17,13 @@ export class EmployeesService {
     return this.employeeRepository.save(employee);
   }
 
-  async findAll(): Promise<Employee[]> {
+  async findAll(search?: string): Promise<Employee[]> {
+    const whereCondition: any = { deletedAt: IsNull() };
+    if (search && search.trim()) {
+      whereCondition.lastName = Like(`%${search}%`);
+    }
     return this.employeeRepository.find({
-      where: { deletedAt: IsNull() },
+      where: whereCondition,
       relations: ['files', 'hrOperations'],
       order: { createdAt: 'DESC' },
     });
