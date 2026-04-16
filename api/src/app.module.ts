@@ -8,6 +8,8 @@ import { EmployeesModule } from './employees/employees.module';
 import { FilesModule } from './files/files.module';
 import { HrOperationsModule } from './hr-operations/hr-operations.module';
 import { OperationHistoryModule } from './operation-history/operation-history.module';
+import { RolesModule } from './roles/roles.module';
+import { UsersModule } from './users/users.module';
 @Module({
   imports:[
     ConfigModule.forRoot({
@@ -36,6 +38,8 @@ import { OperationHistoryModule } from './operation-history/operation-history.mo
     FilesModule,
     HrOperationsModule,
     OperationHistoryModule,
+    RolesModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
