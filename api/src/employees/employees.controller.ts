@@ -32,4 +32,10 @@ export class EmployeesController {
   remove(@Param('id') id: string) {
     return this.employeesService.remove(id);
   }
+
+  @Post(':id/dismiss')
+  @HttpCode(HttpStatus.OK)
+  async dismiss(@Param('id') id: string) {
+    return this.employeesService.dismiss(id);
+  }
 }

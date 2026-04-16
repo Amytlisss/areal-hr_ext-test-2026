@@ -1,14 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
+import { Repository, IsNull, In } from 'typeorm';
 import { OperationHistory, ObjectType } from './entities/operation-history.entity';
 import { CreateOperationHistoryDto } from './dto/create-operation-history.dto';
+import { HrOperation } from '../hr-operations/entities/hr-operation.entity';
 
 @Injectable()
 export class OperationHistoryService {
   constructor(
     @InjectRepository(OperationHistory)
     private historyRepository: Repository<OperationHistory>,
+    @InjectRepository(HrOperation)
+    private hrOperationRepository: Repository<HrOperation>,
   ) {}
 
   async create(createHistoryDto: CreateOperationHistoryDto): Promise<OperationHistory> {
@@ -47,10 +50,17 @@ export class OperationHistoryService {
   }
 
   async findByEmployee(employeeId: string): Promise<OperationHistory[]> {
+    const hrOperations = await this.hrOperationRepository.find({
+      where: { employeeId, deletedAt: IsNull() },
+      select: ['id'],
+    });
+    
+    const hrOperationIds = hrOperations.map(op => op.id);
+
     return this.historyRepository.find({
       where: [
         { objectType: ObjectType.EMPLOYEE, objectId: employeeId, deletedAt: IsNull() },
-        { objectType: ObjectType.HR_OPERATION, objectId: employeeId, deletedAt: IsNull() },
+        { objectType: ObjectType.HR_OPERATION, objectId: In(hrOperationIds), deletedAt: IsNull() },
       ],
       relations: ['user'],
       order: { createdAt: 'DESC' },

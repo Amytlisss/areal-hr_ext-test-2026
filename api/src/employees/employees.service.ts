@@ -21,26 +21,25 @@ export class EmployeesService {
   }
 
   async findAll(search?: string): Promise<Employee[]> {
-    const whereCondition: any = { deletedAt: IsNull() };
-
-    if (search && search.trim()) {
-      whereCondition.lastName = Like(`%${search}%`);
+    const query = this.employeeRepository
+      .createQueryBuilder('employee')
+      .leftJoinAndSelect('employee.files', 'files')
+      .leftJoinAndSelect('employee.hrOperations', 'hrOperations')
+      .where('employee.deletedAt IS NULL')
+      .orderBy('employee.createdAt', 'DESC');
+    
+    if (search?.trim()) {
+      query.andWhere('employee.lastName ILIKE :search', { search: `%${search}%` });
     }
-
-    const employees = await this.employeeRepository.find({
-      where: whereCondition,
-      relations: ['files', 'hrOperations'],
-      order: { createdAt: 'DESC' },
+  
+    const employees = await query.getMany();
+  
+    return employees.filter(employee => {
+      const lastOp = employee.hrOperations?.sort((a, b) => 
+        new Date(b.operationDate).getTime() - new Date(a.operationDate).getTime()
+      )[0];
+      return lastOp?.operationType !== OperationType.DISMISSAL;
     });
-
-    const activeEmployees: Employee[] = [];
-    for (const employee of employees) {
-      const dismissed = await this.isDismissed(employee.id);
-      if (!dismissed) {
-        activeEmployees.push(employee);
-      }
-    }
-    return activeEmployees;
   }
 
   async findAllWithDismissed(search?: string): Promise<Employee[]> {
@@ -98,13 +97,18 @@ export class EmployeesService {
     await this.employeeRepository.save(employee);
   }
 
-  async dismiss(id: string): Promise<void> {
+  async dismiss(id: string): Promise<HrOperation> {
     const employee = await this.findOne(id);
-    
     if (employee.isDismissed) {
       throw new BadRequestException(`Employee is already dismissed`);
     }
-
-  return;
+    
+    const hrOperation = this.hrOperationRepository.create({
+      employeeId: id,
+      operationType: OperationType.DISMISSAL,
+      operationDate: new Date(),
+    });
+    
+    return this.hrOperationRepository.save(hrOperation);
   }
 }
