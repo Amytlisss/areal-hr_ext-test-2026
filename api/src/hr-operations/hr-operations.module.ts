@@ -6,6 +6,7 @@ import { HrOperation } from './entities/hr-operation.entity';
 import { EmployeesModule } from '../employees/employees.module';
 import { DepartmentsModule } from '../departments/departments.module';
 import { PositionModule } from '../positions/position.module';
+import { OperationHistoryModule } from '../operation-history/operation-history.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PositionModule } from '../positions/position.module';
     EmployeesModule,
     DepartmentsModule,
     PositionModule,
+    OperationHistoryModule,
   ],
   controllers: [HrOperationsController],
   providers: [HrOperationsService],
