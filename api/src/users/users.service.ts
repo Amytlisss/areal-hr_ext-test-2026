@@ -45,13 +45,28 @@ export class UsersService {
     return this.toResponseDto(savedUser, role.name);
   }
 
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.find({
-      where: { deletedAt: IsNull() },
-      relations: ['role'],
-      order: { createdAt: 'DESC' },
-    });
+  async findAll(filters: { search?: string; roleId?: string; includeDeleted?: string }): Promise<UserResponseDto[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role');
 
+    if (filters.includeDeleted !== 'true') {
+      queryBuilder.andWhere('user.deletedAt IS NULL');
+    }
+
+    if (filters.roleId) {
+      queryBuilder.andWhere('user.roleId = :roleId', { roleId: filters.roleId });
+    }
+
+    if (filters.search && filters.search.trim()) {
+      queryBuilder.andWhere(
+        '(user.lastName ILIKE :search OR user.firstName ILIKE :search OR user.login ILIKE :search)',
+        { search: `%${filters.search}%` }
+      );
+    }
+
+    queryBuilder.orderBy('user.createdAt', 'DESC');
+
+    const users = await queryBuilder.getMany();
     return users.map(user => this.toResponseDto(user, user.role.name));
   }
 
