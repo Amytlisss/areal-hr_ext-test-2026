@@ -10,6 +10,7 @@ import { HrOperationsModule } from './hr-operations/hr-operations.module';
 import { OperationHistoryModule } from './operation-history/operation-history.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports:[
     ConfigModule.forRoot({
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
     OperationHistoryModule,
     RolesModule,
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

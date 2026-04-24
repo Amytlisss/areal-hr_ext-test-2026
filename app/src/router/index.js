@@ -26,18 +26,18 @@ const routes = [
     component: () => import('../views/DepartmentsPage.vue'),
     meta: { requiresAuth: true },
   },
-//   {
-//     path: '/positions',
-//     name: 'Positions',
-//     component: () => import('../views/PositionsPage.vue'),
-//     meta: { requiresAuth: true },
-//   },
-//   {
-//     path: '/employees',
-//     name: 'Employees',
-//     component: () => import('../views/EmployeesPage.vue'),
-//     meta: { requiresAuth: true },
-//   },
+  {
+    path: '/positions',
+    name: 'Positions',
+    component: () => import('../views/PositionsPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/employees',
+    name: 'Employees',
+    component: () => import('../views/EmployeesPage.vue'),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
