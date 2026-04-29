@@ -5,6 +5,7 @@
       <router-link to="/departments">Отделы</router-link>
       <router-link to="/positions">Должности</router-link>
       <router-link to="/employees">Сотрудники</router-link>
+      <router-link to="/history">История</router-link>
     </nav>
     <main>
       <router-view />

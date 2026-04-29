@@ -38,6 +38,12 @@ const routes = [
     component: () => import('../views/EmployeesPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/history',
+    name: 'History',
+    component: () => import('../views/HistoryPage.vue'),
+    meta: { requiresAuth: true },
+  }
 ];
 
 const router = createRouter({
