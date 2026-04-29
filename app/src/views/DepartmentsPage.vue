@@ -69,11 +69,12 @@
 import { ref, onMounted } from 'vue';
 import { useDepartmentsStore } from '../stores/departments';
 import { useOrganizationsStore } from '../stores/organizations';
+import { storeToRefs } from 'pinia';
 
 const departmentsStore = useDepartmentsStore();
 const organizationsStore = useOrganizationsStore();
 
-const { list, loading, error } = departmentsStore;
+const { list, loading, error } = storeToRefs(departmentsStore);
 const organizations = ref([]);
 
 const dialogVisible = ref(false);
@@ -84,12 +85,21 @@ const formData = ref({
   comment: '',
 });
 const selectedId = ref(null);
+const searchQuery = ref('');
+let searchTimeout = null;
 
 onMounted(async () => {
   await departmentsStore.fetchAll();
   await organizationsStore.fetchAll();
   organizations.value = organizationsStore.list;
 });
+
+function handleSearch() {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    departmentsStore.fetchAll(searchQuery.value);
+  }, 300);
+}
 
 function openCreateDialog() {
   isEdit.value = false;
@@ -117,6 +127,7 @@ async function save() {
       await departmentsStore.create(formData.value);
     }
     dialogVisible.value = false;
+    await departmentsStore.fetchAll();
   } catch (err) {
     alert('Ошибка: ' + (err.response?.data?.message || err.message));
   }

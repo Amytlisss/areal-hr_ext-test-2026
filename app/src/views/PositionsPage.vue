@@ -63,9 +63,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { usePositionsStore } from '../stores/positions';
 
 const store = usePositionsStore();
+
+const { list, loading, error } = storeToRefs(store);
 
 const dialogVisible = ref(false);
 const isEdit = ref(false);
@@ -113,6 +116,7 @@ async function save() {
       await store.create(formData.value);
     }
     dialogVisible.value = false;
+    await store.fetchAll(searchQuery.value);
   } catch (err) {
     alert('Ошибка: ' + (err.response?.data?.message || err.message));
   }

@@ -123,9 +123,11 @@ export class UsersService {
     }
 
     if (updateUserDto.password) {
-      updateUserDto.password = await argon2.hash(updateUserDto.password, {
+      const passwordHash = await argon2.hash(updateUserDto.password, {
         type: argon2.argon2id,
       });
+      user.passwordHash = passwordHash;
+      delete updateUserDto.password; 
     }
 
     Object.assign(user, updateUserDto);
