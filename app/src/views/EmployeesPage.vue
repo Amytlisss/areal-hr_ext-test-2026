@@ -26,10 +26,10 @@
       </select>
     </div>
 
-    <div v-if="store.loading" class="loading">Загрузка...</div>
-    <div v-if="store.error" class="error">{{ store.error }}</div>
+    <div v-if="loading" class="loading">Загрузка...</div>
+    <div v-if="error" class="error">{{ error }}</div>
 
-    <table v-if="!store.loading && store.list.length > 0" class="data-table">
+    <table v-if="!loading && list.length > 0" class="data-table">
       <thead>
         <tr>
           <th>Фамилия</th>
@@ -41,7 +41,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in store.list" :key="item.id" :class="{ dismissed: item.isDismissed }">
+        <tr v-for="item in list" :key="item.id" :class="{ dismissed: item.isDismissed }">
           <td>{{ item.lastName }}</td>
           <td>{{ item.firstName }}</td>
           <td>{{ item.middleName || '—' }}</td>
@@ -60,7 +60,7 @@
       </tbody>
     </table>
 
-    <div v-else-if="!store.loading && store.list.length === 0" class="empty">
+    <div v-else-if="!loading && list.length === 0" class="empty">
       Нет сотрудников. Добавьте первого!
     </div>
 
@@ -119,11 +119,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia'; 
 import { useEmployeesStore } from '../stores/employees';
 import { useDepartmentsStore } from '../stores/departments';
 
 const store = useEmployeesStore();
 const departmentsStore = useDepartmentsStore();
+
+const { list, loading, error } = storeToRefs(store);
 
 const departments = ref([]);
 const dialogVisible = ref(false);

@@ -5,11 +5,11 @@
       <button @click="openCreateDialog" class="btn-primary">+ Добавить организацию</button>
     </div>
 
-    <div v-if="store.loading" class="loading">Загрузка...</div>
+    <div v-if="loading" class="loading">Загрузка...</div>
 
-    <div v-if="store.error" class="error">{{ store.error }}</div>
+    <div v-if="error" class="error">{{ error }}</div>
 
-    <table v-if="!store.loading && store.list.length > 0" class="data-table">
+    <table v-if="!loading && list.length > 0" class="data-table">
       <thead>
         <tr>
           <th>Наименование</th>
@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in store.list" :key="item.id">
+        <tr v-for="item in list" :key="item.id">
           <td>{{ item.name }}</td>
           <td>{{ item.comment || '—' }}</td>
           <td>{{ formatDate(item.createdAt) }}</td>
@@ -31,7 +31,7 @@
       </tbody>
     </table>
 
-    <div v-else-if="!store.loading && store.list.length === 0" class="empty">
+    <div v-else-if="!loading && list.length === 0" class="empty">
       Нет организаций. Добавьте первую!
     </div>
 
@@ -59,9 +59,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useOrganizationsStore } from '../stores/organizations';
 
 const store = useOrganizationsStore();
+
+const { list, loading, error } = storeToRefs(store);
 
 const dialogVisible = ref(false);
 const isEdit = ref(false);
