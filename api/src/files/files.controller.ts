@@ -1,11 +1,13 @@
 import 'multer';
-import { Controller, Get, Post, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, Res, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, UseGuards, Get, Post, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, Res, HttpCode, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import * as path from 'path';
 import { FilesService } from './files.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('files')
+@UseGuards(AuthGuard('jwt'))
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 

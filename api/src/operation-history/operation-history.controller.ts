@@ -1,8 +1,10 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, UseGuards, Get, Param, Query } from '@nestjs/common';
 import { OperationHistoryService } from './operation-history.service';
 import { ObjectType } from './entities/operation-history.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('operation-history')
+@UseGuards(AuthGuard('jwt'))
 export class OperationHistoryController {
   constructor(private readonly historyService: OperationHistoryService) {}
 

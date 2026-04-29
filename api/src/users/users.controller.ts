@@ -3,8 +3,10 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUsersDto } from './dto/find-users.dto'; 
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

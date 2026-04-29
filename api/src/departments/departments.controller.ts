@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query, UseGuards } from "@nestjs/common";
+import { AuthGuard } from '@nestjs/passport';
 import { DepartmentsService } from "./departments.service";
 import { CreateDepartmentDto } from "./dto/create-department.dto";
 import { UpdateDepartmentDto } from "./dto/update-department.dto";
 
 @Controller('departments')
+@UseGuards(AuthGuard('jwt'))
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 

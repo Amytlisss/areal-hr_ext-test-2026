@@ -1,9 +1,11 @@
-import{Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus} from '@nestjs/common';
+import{Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import{OrganizationsService} from './organizations.service';
 import{CreateOrganizationDto} from './dto/create-organization.dto';
 import{UpdateOrganizationDto} from './dto/update-organization.dto';
 
 @Controller('organizations')
+@UseGuards(AuthGuard('jwt'))
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
