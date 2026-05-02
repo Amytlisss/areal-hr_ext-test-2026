@@ -38,5 +38,12 @@ export class PositionsService{
         const position=await this.findOne(id);
         position.deletedAt=new Date();
         await this.positionRepository.save(position);
-  }
+    }
+
+    async findAll(): Promise<Position[]> {
+      return this.positionRepository.find({
+        where: { deletedAt: IsNull() },
+        order: { createdAt: 'DESC' },
+      });
+    }
 }

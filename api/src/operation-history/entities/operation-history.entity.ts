@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-//import { User } from '../../users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum ObjectType {
   ORGANIZATION = 'organization',
@@ -17,9 +17,9 @@ export class OperationHistory {
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  //@ManyToOne(() => User)
-  //@JoinColumn({ name: 'user_id' })
-  //user: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column({ name: 'object_type', type: 'varchar', length: 50 })
   objectType: ObjectType;

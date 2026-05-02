@@ -32,9 +32,9 @@ export class UsersService {
       throw new ConflictException(`User with login ${createUserDto.login} already exists`);
     }
 
-    const passwordHash = await argon2.hash(createUserDto.password, {
-      type: argon2.argon2id,
-    });
+    const passwordHash = await argon2.hash(createUserDto.password,
+      {type: argon2.argon2id,}
+    );
 
     const user = this.userRepository.create({
       ...createUserDto,
@@ -123,9 +123,9 @@ export class UsersService {
     }
 
     if (updateUserDto.password) {
-      const passwordHash = await argon2.hash(updateUserDto.password, {
-        type: argon2.argon2id,
-      });
+      const passwordHash = await argon2.hash(updateUserDto.password,
+        {type: argon2.argon2id,}
+      );
       user.passwordHash = passwordHash;
       delete updateUserDto.password; 
     }

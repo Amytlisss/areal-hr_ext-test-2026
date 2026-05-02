@@ -14,6 +14,11 @@ export class PositionController{
         return this.positionsService.create(createPositionDto);
     }
 
+    @Get()
+    findAll() {
+        return this.positionsService.findAll();
+    }
+
     @Get(':id')
     findOne(@Param('id') id: string) {
     return this.positionsService.findOne(id);
