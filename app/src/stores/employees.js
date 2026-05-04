@@ -71,5 +71,21 @@ export const useEmployeesStore = defineStore('employees', {
         this.loading = false;
       }
     },
+
+    async dismiss(id) {
+      this.loading = true;
+      try {
+        await api.post(`/employees/${id}/dismiss`);
+        const index = this.list.findIndex(item => item.id === id);
+        if (index !== -1) {
+          this.list[index].isDismissed = true;
+        }
+      } catch (err) {
+        this.error = err.response?.data?.message || err.message;
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    }
   },
 });

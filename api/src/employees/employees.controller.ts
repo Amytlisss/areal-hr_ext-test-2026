@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Controller,Req, UseGuards, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -10,8 +10,9 @@ export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   @Post()
-  create(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.employeesService.create(createEmployeeDto);
+  create(@Body() createEmployeeDto: CreateEmployeeDto, @Req() req: any) {
+    const userId = req.user?.id;
+    return this.employeesService.create(createEmployeeDto, userId);
   }
 
   @Get()
@@ -25,19 +26,22 @@ export class EmployeesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
-    return this.employeesService.update(id, updateEmployeeDto);
+  update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto, @Req() req: any) {
+    const userId = req.user?.id;
+    return this.employeesService.update(id, updateEmployeeDto, userId);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
-    return this.employeesService.remove(id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.id;
+    return this.employeesService.remove(id, userId);
   }
 
   @Post(':id/dismiss')
   @HttpCode(HttpStatus.OK)
-  async dismiss(@Param('id') id: string) {
-    return this.employeesService.dismiss(id);
+  async dismiss(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.id;
+    return this.employeesService.dismiss(id, userId);
   }
 }

@@ -111,6 +111,30 @@
             <button type="button" @click="dialogVisible = false" class="btn-secondary">Отмена</button>
             <button type="submit" class="btn-primary">Сохранить</button>
           </div>
+
+           <!-- Блок файлов (только для редактирования) -->
+          <div v-if="isEdit && selectedEmployee" class="files-section">
+            <h3>Сканы паспорта</h3>
+            
+            <!-- Список файлов -->
+            <div v-for="file in files" :key="file.id" class="file-item">
+              <a :href="`http://localhost:3000/files/download/${file.id}`" target="_blank">
+                {{ file.name }}
+              </a>
+              <button type="button" @click="deleteFile(file.id)" class="btn-delete-small">🗑️</button>
+            </div>
+            
+            <!-- Форма загрузки -->
+            <div class="upload-form">
+              <input type="file" ref="fileInput" @change="onFileSelected" accept="image/*,application/pdf" />
+              <button type="button" @click="uploadFile" :disabled="!selectedFile">Загрузить скан</button>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" @click="dialogVisible = false" class="btn-secondary">Отмена</button>
+            <button type="submit" class="btn-primary">Сохранить</button>
+          </div>
         </form>
       </div>
     </div>
@@ -122,6 +146,7 @@ import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia'; 
 import { useEmployeesStore } from '../stores/employees';
 import { useDepartmentsStore } from '../stores/departments';
+import api from '../api/index';
 
 const store = useEmployeesStore();
 const departmentsStore = useDepartmentsStore();
@@ -195,13 +220,33 @@ function openCreateDialog() {
     registrationHouse: '', registrationBuilding: '', registrationApartment: '',
   };
   selectedId.value = null;
+  selectedEmployee.value = null;
+  files.value = [];
   dialogVisible.value = true;
 }
 
 function openEditDialog(item) {
   isEdit.value = true;
-  formData.value = { ...item };
+  formData.value = {
+    lastName: item.lastName,
+    firstName: item.firstName,
+    middleName: item.middleName || '',
+    birthDate: item.birthDate,
+    passportSeries: item.passportSeries,
+    passportNumber: item.passportNumber,
+    passportIssueDate: item.passportIssueDate,
+    passportCode: item.passportCode || '',
+    passportIssuedBy: item.passportIssuedBy,
+    registrationRegion: item.registrationRegion || '',
+    registrationLocality: item.registrationLocality || '',
+    registrationStreet: item.registrationStreet || '',
+    registrationHouse: item.registrationHouse || '',
+    registrationBuilding: item.registrationBuilding || '',
+    registrationApartment: item.registrationApartment || '',
+  };
   selectedId.value = item.id;
+  selectedEmployee.value = item; 
+  fetchFiles(item.id);    
   dialogVisible.value = true;
 }
 
@@ -219,15 +264,65 @@ async function save() {
   }
 }
 
-function confirmDismiss(item) {
+async function confirmDismiss(item) {
   if (confirm(`Уволить сотрудника "${item.lastName} ${item.firstName}"?`)) {
-    store.dismiss(item.id);
+    try {
+      await store.dismiss(item.id);
+      applyFilters();
+      alert('Сотрудник уволен');
+    } catch (err) {
+      alert('Ошибка: ' + (err.response?.data?.message || err.message));
+    }
   }
 }
 
 function confirmDelete(item) {
   if (confirm(`Удалить сотрудника "${item.lastName} ${item.firstName}"?`)) {
     store.delete(item.id);
+  }
+}
+
+const selectedEmployee = ref(null);
+const files = ref([]);
+const selectedFile = ref(null);
+const fileInput = ref(null);
+
+function onFileSelected(event) {
+  selectedFile.value = event.target.files[0];
+}
+
+async function uploadFile() {
+  if (!selectedFile.value || !selectedEmployee.value) return;
+  
+  const formData = new FormData();
+  formData.append('file', selectedFile.value);
+  
+  try {
+    await api.post(`/files/upload/${selectedEmployee.value.id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    alert('Файл загружен');
+    fetchFiles(selectedEmployee.value.id);
+    selectedFile.value = null;
+    if (fileInput.value) fileInput.value.value = '';
+  } catch (err) {
+    alert('Ошибка загрузки: ' + err.message);
+  }
+}
+
+async function fetchFiles(employeeId) {
+  try {
+    const response = await api.get(`/files/employee/${employeeId}`);
+    files.value = response.data;
+  } catch (err) {
+    console.error('Ошибка загрузки списка файлов', err);
+  }
+}
+
+async function deleteFile(fileId) {
+  if (confirm('Удалить файл?')) {
+    await api.delete(`/files/${fileId}`);
+    fetchFiles(selectedEmployee.value.id);
   }
 }
 </script>
@@ -369,5 +464,30 @@ function confirmDelete(item) {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+}
+.files-section {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+.file-item {
+  margin: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.upload-form {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.btn-delete-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: red;
 }
 </style>
